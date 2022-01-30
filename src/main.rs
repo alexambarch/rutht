@@ -1,8 +1,9 @@
-mod lisp;
-
 use clap::Parser;
-use lisp::interpreter::interpret;
 use std::fs::read_to_string;
+
+mod lib;
+mod lisp;
+mod util;
 
 #[derive(Parser, Debug)]
 struct Args {
@@ -14,9 +15,8 @@ fn main() {
     let args = Args::parse();
 
     let mut contents = read_to_string(args.file).unwrap();
-    contents.retain(|c| c != '\n');
 
-    let result = interpret(&contents).unwrap();
+    let result = lisp::interpreter::interpret(&contents).unwrap();
 
     println!("{}, {}", result.0, result.1);
 }
