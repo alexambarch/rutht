@@ -1,7 +1,7 @@
 use crate::lib::string_parser::parse_string;
 use crate::util::Literal;
 use nom::{
-    branch::alt, character::complete::{char, digit1}, combinator::{opt, recognize}, sequence::{tuple, preceded}, IResult, multi::many0,
+    branch::alt, character::complete::{char, digit1}, combinator::{opt, recognize}, sequence::tuple, IResult,
 };
 
 /// Parse a (possibly negative) number
