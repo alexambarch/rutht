@@ -120,7 +120,7 @@ where
 
 /// Parse a string. Use a loop of parse_fragment and push all of the fragments
 /// into an output string.
-pub fn parse_string<'a, E>(input: &'a str) -> IResult<&'a str, Literal, E>
+pub fn parse_string<'a, E>(input: &'a str) -> IResult<&'a str, &'a str, E>
 where
     E: ParseError<&'a str> + FromExternalError<&'a str, std::num::ParseIntError>,
 {
@@ -148,5 +148,5 @@ where
     // `delimited` with a looping parser (like fold_many0), be sure that the
     // loop won't accidentally match your closing delimiter!
     let (input, string) = delimited(char('"'), build_string, char('"'))(input)?;
-    Ok((input, Literal::String(string)))
+    Ok((input, &string))
 }
