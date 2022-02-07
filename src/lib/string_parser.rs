@@ -1,4 +1,4 @@
-use crate::util::Literal;
+use crate::util::{LanguageType, Literal};
 use nom::branch::alt;
 use nom::bytes::streaming::{is_not, take_while_m_n};
 use nom::character::streaming::{char, multispace1};
@@ -120,7 +120,7 @@ where
 
 /// Parse a string. Use a loop of parse_fragment and push all of the fragments
 /// into an output string.
-pub fn parse_string<'a, E>(input: &'a str) -> IResult<&'a str, &'a str, E>
+pub fn parse_string<'a, E>(input: &'a str) -> IResult<&'a str, LanguageType, E>
 where
     E: ParseError<&'a str> + FromExternalError<&'a str, std::num::ParseIntError>,
 {
@@ -148,5 +148,5 @@ where
     // `delimited` with a looping parser (like fold_many0), be sure that the
     // loop won't accidentally match your closing delimiter!
     let (input, string) = delimited(char('"'), build_string, char('"'))(input)?;
-    Ok((input, &string))
+    Ok((input, LanguageType::LiteralValue(Literal::String(string))))
 }
