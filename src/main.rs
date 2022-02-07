@@ -14,9 +14,9 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let mut contents = read_to_string(args.file).unwrap();
+    let contents = read_to_string(args.file).unwrap();
 
-    let result = lisp::interpreter::interpret(&contents).unwrap();
+    let (_, (function, args)) = lisp::interpreter::interpret(&contents).unwrap();
 
-    println!("{}, {}", result.0, result.1);
+    println!("{:?}, {:?}", function, args);
 }

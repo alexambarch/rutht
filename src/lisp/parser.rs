@@ -14,8 +14,8 @@ fn parse_number(input: &str) -> IResult<&str, LanguageType> {
     let (input, number) = tuple((opt(char('-')), digit1))(input)?;
     let (_, value) = number;
 
-    let num = i64::from_str_radix(value, 10).unwrap();
-    if let Some(sign) = number.0 {
+    let mut num = i64::from_str_radix(value, 10).unwrap();
+    if number.0.is_some() {
         num = num * -1;
     }
 
@@ -37,7 +37,7 @@ fn parse_symbol(input: &str) -> IResult<&str, LanguageType> {
 /// Parse a bunch of heterogenous values
 fn parse_many_vals(input: &str) -> IResult<&str, Vec<LanguageType>> {
     let (input, values) = fold_many0(
-        terminated(alt((parse_number, parse_string, parse_symbol)), char(' ')),
+        terminated(alt((parse_literal, parse_symbol)), char(' ')),
         Vec::new,
         |mut acc, item| {
             acc.push(item);
@@ -59,7 +59,12 @@ pub fn parse_funcall(input: &str) -> IResult<&str, (LanguageType, Vec<LanguageTy
     let (input, funcall) =
         tuple((char('('), parse_symbol, opt(parse_collection), char(')')))(input)?;
 
-    let (_, symbol, Some(args), _) = funcall;
+    let (_, symbol, args, _) = funcall;
 
-    Ok((input, (symbol, args)))
+    if let Some(list) = args {
+        return Ok((input, (symbol, list)))
+    } else {
+        return Ok((input, (symbol, vec![])))
+    }
+
 }

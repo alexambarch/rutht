@@ -1,11 +1,8 @@
 use anyhow::Result;
-use nom::{bytes::complete::is_not, character::complete::char, sequence::delimited, IResult};
+use crate::util::LanguageType;
+use super::parser::parse_funcall;
 
-pub fn interpret(file_contents: &str) -> Result<(&str, &str)> {
-    let result = sexp(&file_contents).unwrap();
-    Ok(result)
-}
-
-fn sexp(input: &str) -> IResult<&str, &str> {
-    delimited(char('('), is_not(")"), char(')'))(input)
+pub fn interpret(file_contents: &str) -> Result<(&str, (LanguageType, Vec<LanguageType>))> {
+    let (input, result) = parse_funcall(file_contents).unwrap();
+    Ok((input, result))
 }
