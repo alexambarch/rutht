@@ -2,7 +2,7 @@ use crate::lib::string_parser::parse_string;
 use crate::util::{LanguageType, Literal};
 use nom::{
     branch::alt,
-    character::complete::{alpha1, char, digit1},
+    character::complete::{alpha1, char, digit1, multispace0},
     combinator::opt,
     multi::fold_many0,
     sequence::{delimited, terminated, tuple},
@@ -37,7 +37,7 @@ fn parse_symbol(input: &str) -> IResult<&str, LanguageType> {
 /// Parse a bunch of heterogenous values
 fn parse_many_vals(input: &str) -> IResult<&str, Vec<LanguageType>> {
     let (input, values) = fold_many0(
-        terminated(alt((parse_literal, parse_symbol)), char(' ')),
+        terminated(alt((parse_literal, parse_symbol)), multispace0),
         Vec::new,
         |mut acc, item| {
             acc.push(item);
@@ -57,14 +57,15 @@ fn parse_collection(input: &str) -> IResult<&str, Vec<LanguageType>> {
 /// Parse a function call
 pub fn parse_funcall(input: &str) -> IResult<&str, (LanguageType, Vec<LanguageType>)> {
     let (input, funcall) =
-        tuple((char('('), parse_symbol, opt(parse_collection), char(')')))(input)?;
+        tuple((char('('), parse_symbol, opt(tuple((multispace0, parse_many_vals))), char(')')))(input)?;
 
     let (_, symbol, args, _) = funcall;
 
     if let Some(list) = args {
-        return Ok((input, (symbol, list)))
+        // If args is Some, it will be a tuple of the space character followed by the actual list
+        let (_, arg_list) = list;
+        return Ok((input, (symbol, arg_list)));
     } else {
-        return Ok((input, (symbol, vec![])))
+        return Ok((input, (symbol, vec![])));
     }
-
 }
