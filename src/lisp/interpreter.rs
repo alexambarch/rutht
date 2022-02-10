@@ -1,5 +1,5 @@
 use anyhow::Result;
-use crate::util::LanguageType;
+use crate::lisp::LanguageType;
 use super::parser::parse_funcall;
 
 pub fn interpret(file_contents: &str) -> Result<(&str, LanguageType)> {
