@@ -16,7 +16,7 @@ fn main() {
 
     let contents = read_to_string(args.file).unwrap();
 
-    let (_, (function, args)) = lisp::interpreter::interpret(&contents).unwrap();
+    let (_, lisp) = lisp::interpreter::interpret(&contents).unwrap();
 
-    println!("{:?}, {:?}", function, args);
+    println!("{:?}", lisp);
 }

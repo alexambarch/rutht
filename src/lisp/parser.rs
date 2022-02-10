@@ -11,6 +11,7 @@ use nom::{
 
 /// Parse a (possibly negative) number
 fn parse_number(input: &str) -> IResult<&str, LanguageType> {
+    // TODO parse floating point numbers
     let (input, number) = tuple((opt(char('-')), digit1))(input)?;
     let (_, value) = number;
 
@@ -35,9 +36,9 @@ fn parse_symbol(input: &str) -> IResult<&str, LanguageType> {
 }
 
 /// Parse a bunch of heterogenous values
-fn parse_many_vals(input: &str) -> IResult<&str, Vec<LanguageType>> {
+fn parse_many_vals(input: &str) -> IResult<&str, LanguageType> {
     let (input, values) = fold_many0(
-        terminated(alt((parse_literal, parse_symbol)), multispace0),
+        terminated(alt((parse_literal, parse_symbol, parse_funcall, parse_collection)), multispace0),
         Vec::new,
         |mut acc, item| {
             acc.push(item);
@@ -46,26 +47,24 @@ fn parse_many_vals(input: &str) -> IResult<&str, Vec<LanguageType>> {
     )(input)
     .unwrap();
 
-    Ok((input, values))
+    Ok((input, LanguageType::ArgList(values)))
 }
 
 /// Parse heterogenous collection of values inside of a collection
-fn parse_collection(input: &str) -> IResult<&str, Vec<LanguageType>> {
+fn parse_collection(input: &str) -> IResult<&str, LanguageType> {
     delimited(char('['), parse_many_vals, char(']'))(input)
 }
 
 /// Parse a function call
-pub fn parse_funcall(input: &str) -> IResult<&str, (LanguageType, Vec<LanguageType>)> {
+pub fn parse_funcall(input: &str) -> IResult<&str, LanguageType> {
     let (input, funcall) =
         tuple((char('('), parse_symbol, opt(tuple((multispace0, parse_many_vals))), char(')')))(input)?;
-
     let (_, symbol, args, _) = funcall;
 
     if let Some(list) = args {
-        // If args is Some, it will be a tuple of the space character followed by the actual list
-        let (_, arg_list) = list;
-        return Ok((input, (symbol, arg_list)));
+        let (_, args) = list;
+        return Ok((input, LanguageType::Function{name: Box::new(symbol), args: Box::new(args)}));
     } else {
-        return Ok((input, (symbol, vec![])));
+        return Ok((input, LanguageType::Function{name: Box::new(symbol), args: Box::new(LanguageType::Nil)}));
     }
 }
