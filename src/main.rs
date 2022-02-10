@@ -3,7 +3,6 @@ use std::fs::read_to_string;
 
 mod lib;
 mod lisp;
-mod util;
 
 #[derive(Parser, Debug)]
 struct Args {
