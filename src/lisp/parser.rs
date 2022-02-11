@@ -5,7 +5,7 @@ use nom::{
     branch::alt,
     character::complete::{alpha1, char, digit1, multispace0},
     combinator::opt,
-    multi::{fold_many0, fold_many1},
+    multi::{many0, many1},
     sequence::{delimited, terminated, tuple},
     IResult,
 };
@@ -34,13 +34,8 @@ fn parse_symbol(input: &str) -> IResult<&str, LanguageType> {
 
 /// Parse a bunch of heterogenous values
 fn parse_many_vals(input: &str) -> IResult<&str, LanguageType> {
-    let (input, values) = fold_many0(
+    let (input, values) = many0(
         terminated(alt((parse_literal, parse_symbol, parse_funcall, parse_collection)), multispace0),
-        Vec::new,
-        |mut acc, item| {
-            acc.push(item);
-            acc
-        },
     )(input)
     .unwrap();
 
@@ -68,13 +63,8 @@ pub fn parse_funcall(input: &str) -> IResult<&str, LanguageType> {
 
 /// Parse an entire file full of recursive functions
 pub fn parse_file(input: &str) -> IResult<&str, Vec<LanguageType>> {
-    let (input, values) = fold_many1(
+    let (input, values) = many1(
         terminated(parse_funcall, multispace0),
-        Vec::new,
-        |mut acc, item| {
-            acc.push(item);
-            acc
-        },
     )(input)?;
 
     Ok((input, values))
