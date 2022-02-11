@@ -1,5 +1,5 @@
 use crate::lib::string_parser::parse_string;
-use crate::lisp::{Literal, LanguageType, Number};
+use crate::lisp::{LanguageType, Literal, Number};
 use nom::combinator::recognize;
 use nom::{
     branch::alt,
@@ -17,7 +17,10 @@ fn parse_number(input: &str) -> IResult<&str, LanguageType> {
 
     let num = i64::from_str_radix(number, 10).unwrap();
 
-    Ok((input, LanguageType::LiteralValue(Literal::Number(Number::Integer(num)))))
+    Ok((
+        input,
+        LanguageType::LiteralValue(Literal::Number(Number::Integer(num))),
+    ))
 }
 
 /// Parse a literal value, either a string or a number
@@ -34,9 +37,10 @@ fn parse_symbol(input: &str) -> IResult<&str, LanguageType> {
 
 /// Parse a bunch of heterogenous values
 fn parse_many_vals(input: &str) -> IResult<&str, LanguageType> {
-    let (input, values) = many0(
-        terminated(alt((parse_literal, parse_symbol, parse_funcall, parse_collection)), multispace0),
-    )(input)
+    let (input, values) = many0(terminated(
+        alt((parse_literal, parse_symbol, parse_funcall, parse_collection)),
+        multispace0,
+    ))(input)
     .unwrap();
 
     Ok((input, LanguageType::ArgList(values)))
@@ -49,23 +53,37 @@ fn parse_collection(input: &str) -> IResult<&str, LanguageType> {
 
 /// Parse a function call
 pub fn parse_funcall(input: &str) -> IResult<&str, LanguageType> {
-    let (input, funcall) =
-        tuple((char('('), parse_symbol, opt(tuple((multispace0, parse_many_vals))), char(')')))(input)?;
+    let (input, funcall) = tuple((
+        char('('),
+        parse_symbol,
+        opt(tuple((multispace0, parse_many_vals))),
+        char(')'),
+    ))(input)?;
     let (_, symbol, args, _) = funcall;
 
     if let Some(list) = args {
         let (_, args) = list;
-        return Ok((input, LanguageType::Function{name: Box::new(symbol), args: Box::new(args)}));
+        return Ok((
+            input,
+            LanguageType::Function {
+                name: Box::new(symbol),
+                args: Box::new(args),
+            },
+        ));
     } else {
-        return Ok((input, LanguageType::Function{name: Box::new(symbol), args: Box::new(LanguageType::Nil)}));
+        return Ok((
+            input,
+            LanguageType::Function {
+                name: Box::new(symbol),
+                args: Box::new(LanguageType::Nil),
+            },
+        ));
     }
 }
 
 /// Parse an entire file full of recursive functions
 pub fn parse_file(input: &str) -> IResult<&str, Vec<LanguageType>> {
-    let (input, values) = many1(
-        terminated(parse_funcall, multispace0),
-    )(input)?;
+    let (input, values) = many1(terminated(parse_funcall, multispace0))(input)?;
 
     Ok((input, values))
 }

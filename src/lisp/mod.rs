@@ -6,7 +6,10 @@ pub enum LanguageType {
     Symbol(String),
     LiteralValue(Literal),
     ArgList(Vec<LanguageType>),
-    Function { name: Box<LanguageType>, args: Box<LanguageType> },
+    Function {
+        name: Box<LanguageType>,
+        args: Box<LanguageType>,
+    },
     Nil,
 }
 
@@ -20,5 +23,5 @@ pub enum Literal {
 #[derive(Debug)]
 pub enum Number {
     Integer(i64),
-    Float(f64)
+    Float(f64),
 }
