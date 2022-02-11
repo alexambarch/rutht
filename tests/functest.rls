@@ -1,1 +1,5 @@
-(deftest symbol (anotherfunction [2 4 "test" 5]) 5)
+(deftest symbol (anotherfunction [2 4 "test" -5]) 5)
+
+(defanother test "absolutely cool"
+    (thetest 20)
+    (aaaa [9 1 1]))

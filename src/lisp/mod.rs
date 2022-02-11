@@ -12,6 +12,13 @@ pub enum LanguageType {
 
 #[derive(Debug)]
 pub enum Literal {
-    Number(i64),
+    Number(Number),
     String(String),
+}
+
+// I'm taking all of your RAM and you're gonna like it
+#[derive(Debug)]
+pub enum Number {
+    Integer(i64),
+    Float(f64)
 }
