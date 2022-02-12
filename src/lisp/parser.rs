@@ -52,7 +52,7 @@ fn parse_collection(input: &str) -> IResult<&str, LanguageType> {
 }
 
 /// Parse a function call
-pub fn parse_funcall(input: &str) -> IResult<&str, LanguageType> {
+fn parse_funcall(input: &str) -> IResult<&str, LanguageType> {
     let (input, funcall) = tuple((
         char('('),
         parse_symbol,
@@ -61,24 +61,19 @@ pub fn parse_funcall(input: &str) -> IResult<&str, LanguageType> {
     ))(input)?;
     let (_, symbol, args, _) = funcall;
 
-    if let Some(list) = args {
-        let (_, args) = list;
-        return Ok((
-            input,
-            LanguageType::Function {
-                name: Box::new(symbol),
-                args: Box::new(args),
-            },
-        ));
-    } else {
-        return Ok((
-            input,
-            LanguageType::Function {
-                name: Box::new(symbol),
-                args: Box::new(LanguageType::Nil),
-            },
-        ));
+    let mut arg_list = LanguageType::Nil;
+
+    if let Some((_, list)) = args {
+        arg_list = list;
     }
+
+    Ok((
+        input,
+        LanguageType::Function {
+            name: Box::new(symbol),
+            args: Box::new(arg_list),
+        },
+    ))
 }
 
 /// Parse an entire file full of recursive functions
