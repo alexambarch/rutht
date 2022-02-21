@@ -7,3 +7,6 @@ That's pretty much the whole project. The (far away) end goal will likely be a p
 The only functions I have concrete plans to implement are the ones detailed in section 3 of [John McCarthy's original Lisp paper](http://www-formal.stanford.edu/jmc/recursive.html)
 
 I am aware that the structure of a system to compile Lisp is in section 4, but I thought it would be more fun to wing it. If I end up needing help (which I probably will) then I will likely end up referencing it.
+
+# Citations
+`string_parser.rs` taken from nom's example string parser. I did not want to have to come up with string parsing on my own as there are too many pitfalls to think about when trying to parse unescaped arbitrary strings.
