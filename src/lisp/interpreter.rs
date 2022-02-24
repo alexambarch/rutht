@@ -8,9 +8,9 @@ pub fn interpret(file_contents: &str) -> Result<(&str, Vec<LanguageType>)> {
     Ok((input, result))
 }
 
-struct Scope<'a> {
+struct Scope<'a, 'b, 'c> {
     name: String,
-    locals: HashMap<String, LanguageType>,
-    parent: &'a Scope<'a>,
-    children: Vec<&'a Scope<'a>>,
+    locals: HashMap<&'a String, &'a LanguageType>,
+    parent: &'b Scope<'a, 'b, 'c>,
+    children: Vec<&'c Scope<'a, 'b, 'c>>,
 }
