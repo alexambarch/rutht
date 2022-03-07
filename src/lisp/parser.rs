@@ -46,9 +46,19 @@ fn parse_many_vals(input: &str) -> IResult<&str, LanguageType> {
     Ok((input, LanguageType::ArgList(values)))
 }
 
+fn parse_many_vals_collection(input: &str) -> IResult<&str, LanguageType> {
+    let (input, arg_list) = parse_many_vals(input).unwrap();
+
+    if let LanguageType::ArgList(values) = arg_list {
+        return Ok((input, LanguageType::Collection(values)));
+    } else {
+        return Err(nom::Err::Error(nom::error::Error { input, code: nom::error::ErrorKind::Fail }));
+    }
+}
+
 /// Parse heterogenous collection of values inside of a collection
 fn parse_collection(input: &str) -> IResult<&str, LanguageType> {
-    delimited(char('['), parse_many_vals, char(']'))(input)
+    delimited(char('['), parse_many_vals_collection, char(']'))(input)
 }
 
 /// Parse a function call

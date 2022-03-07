@@ -5,6 +5,7 @@ pub mod parser;
 pub enum LanguageType {
     Symbol(String),
     LiteralValue(Literal),
+    Collection(Vec<LanguageType>),
     ArgList(Vec<LanguageType>),
     Function {
         name: Box<LanguageType>,
