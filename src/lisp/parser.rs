@@ -52,7 +52,10 @@ fn parse_many_vals_collection(input: &str) -> IResult<&str, LanguageType> {
     if let LanguageType::ArgList(values) = arg_list {
         return Ok((input, LanguageType::Collection(values)));
     } else {
-        return Err(nom::Err::Error(nom::error::Error { input, code: nom::error::ErrorKind::Fail }));
+        return Err(nom::Err::Error(nom::error::Error {
+            input,
+            code: nom::error::ErrorKind::Fail,
+        }));
     }
 }
 
