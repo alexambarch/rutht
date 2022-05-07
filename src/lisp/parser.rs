@@ -15,11 +15,11 @@ fn parse_number(input: &str) -> IResult<&str, LanguageType> {
     // TODO parse floating point numbers
     let (input, number) = recognize(tuple((opt(char('-')), digit1)))(input)?;
 
-    let num = i64::from_str_radix(number, 10).unwrap();
+    let num = number.parse::<i64>().unwrap();
 
     Ok((
         input,
-        LanguageType::LiteralValue(Literal::Number(Number::Integer(num))),
+        LanguageType::Literal(Literal::Number(Number::Integer(num))),
     ))
 }
 
@@ -50,12 +50,12 @@ fn parse_many_vals_collection(input: &str) -> IResult<&str, LanguageType> {
     let (input, arg_list) = parse_many_vals(input).unwrap();
 
     if let LanguageType::ArgList(values) = arg_list {
-        return Ok((input, LanguageType::Collection(values)));
+        Ok((input, LanguageType::Collection(values)))
     } else {
-        return Err(nom::Err::Error(nom::error::Error {
+        Err(nom::Err::Error(nom::error::Error {
             input,
             code: nom::error::ErrorKind::Fail,
-        }));
+        }))
     }
 }
 
