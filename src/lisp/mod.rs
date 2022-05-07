@@ -4,7 +4,7 @@ pub mod parser;
 #[derive(Debug)]
 pub enum LanguageType {
     Symbol(String),
-    LiteralValue(Literal),
+    Literal(Literal),
     Collection(Vec<LanguageType>),
     ArgList(Vec<LanguageType>),
     Function {
