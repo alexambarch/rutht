@@ -148,5 +148,5 @@ where
     // `delimited` with a looping parser (like fold_many0), be sure that the
     // loop won't accidentally match your closing delimiter!
     let (input, string) = delimited(char('"'), build_string, char('"'))(input)?;
-    Ok((input, LanguageType::LiteralValue(Literal::String(string))))
+    Ok((input, LanguageType::Literal(Literal::String(string))))
 }

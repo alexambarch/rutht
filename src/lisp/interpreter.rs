@@ -1,5 +1,5 @@
 use super::parser::parse_file;
-use crate::lisp::LanguageType;
+use crate::lisp::{LanguageType, Literal, Number};
 use anyhow::Result;
 use std::collections::HashMap;
 
